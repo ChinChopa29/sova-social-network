@@ -1,3 +1,40 @@
+<script setup>
+import { ref, watch } from "vue";
+import axiosClient from "@/../axios";
+
+const props = defineProps({
+  visible: Boolean,
+  userId: Number,
+});
+
+const emit = defineEmits(["close", "postCreated"]);
+
+const form = ref({
+  title: "",
+  body: "",
+});
+
+function close() {
+  emit("close");
+}
+
+async function submit() {
+  try {
+    const { data } = await axiosClient.post(`/api/posts`, {
+      ...form.value,
+      user_id: props.userId,
+    });
+
+    emit("postCreated", data);
+    close();
+    form.value.title = "";
+    form.value.body = "";
+  } catch (e) {
+    console.error("Ошибка при создании поста", e);
+  }
+}
+</script>
+
 <template>
   <div
     v-if="visible"
@@ -37,40 +74,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from "vue";
-import axiosClient from "@/../axios";
-
-const props = defineProps({
-  visible: Boolean,
-  userId: Number,
-});
-
-const emit = defineEmits(["close", "postCreated"]);
-
-const form = ref({
-  title: "",
-  body: "",
-});
-
-function close() {
-  emit("close");
-}
-
-async function submit() {
-  try {
-    const { data } = await axiosClient.post(`/api/posts`, {
-      ...form.value,
-      user_id: props.userId,
-    });
-
-    emit("postCreated", data); 
-    close();
-    form.value.title = "";
-    form.value.body = "";
-  } catch (e) {
-    console.error("Ошибка при создании поста", e);
-  }
-}
-</script>

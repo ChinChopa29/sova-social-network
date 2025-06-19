@@ -141,7 +141,7 @@ function login() {
 
       <!-- Декоративные элементы -->
       <div class="mt-6 text-center text-xs text-gray-500">
-        © 2023 Ваша компания. Все права защищены.
+        © 2025 Sova. Все права защищены.
       </div>
     </div>
   </div>

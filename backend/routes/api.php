@@ -24,3 +24,9 @@ Route::middleware('auth:sanctum')->controller(ProfileController::class)->group(f
     Route::put('/profile/{profile:slug}', 'update');
     Route::delete('/profile/{profile:slug}', 'destroy');
 });
+
+// Route::middleware('auth:sanctum')->controller(ProfileController::class)->group(function () {
+//     Route::get('/profile/{profile:slug?}', 'show');
+//     Route::put('/profile/{profile:slug}', 'update');
+//     Route::delete('/profile/{profile:slug}', 'destroy');
+// });

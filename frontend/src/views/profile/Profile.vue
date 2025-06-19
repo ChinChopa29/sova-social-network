@@ -114,7 +114,15 @@ function handlePostCreated(post) {
 
               <div class="mb-4">
                 <h3 class="text-sm font-medium text-gray-500">Пол</h3>
-                <p class="text-gray-800">
+                <p class="text-gray-800" v-if="profile.gender === 'male'">
+                  Мужской
+                </p>
+                <p
+                  v-else-if="profile.gender === 'female'"
+                  class="text-gray-800">
+                  Женский
+                </p>
+                <p v-else class="text-gray-800">
                   {{ profile.gender || "Не указано" }}
                 </p>
               </div>
