@@ -13,7 +13,7 @@ class ProfileController extends Controller
 {
     use AuthorizesRequests;
 
-        public function show(Request $request, Profile $profile = null)
+    public function show(Request $request, Profile $profile = null)
     {
         if (!$profile) {
             $profile = $request->user()->profile;

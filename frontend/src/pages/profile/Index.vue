@@ -3,8 +3,9 @@ import { ref, onMounted } from "vue";
 import { RouterLink, useRoute } from "vue-router";
 import axiosClient from "../../axios";
 import { useAuthStore } from "../../store/auth";
-import UserPosts from "../../components/posts/UserPosts.vue";
-import CreatePostModal from "../../components/posts/CreatePostForm.vue";
+import UserPosts from "./Posts.vue";
+import CreatePostForm from "../../components/ui/CreatePostForm.vue";
+import Toast from "../Toast.vue";
 
 const authStore = useAuthStore();
 const profile = ref(null);
@@ -43,10 +44,22 @@ onMounted(() => {
 });
 
 const showModal = ref(false);
+const toastMessage = ref("");
+const toastVisible = ref(false);
 
-function handlePostCreated(post) {
-  // например: обновить список постов
-  console.log("Создан пост:", post);
+const handleSuccess = (msg) => {
+  toastMessage.value = msg;
+  toastVisible.value = true;
+  setTimeout(() => (toastVisible.value = false), 3000);
+};
+
+function handlePostCreated(message) {
+  toastMessage.value = message;
+  toastVisible.value = true;
+  setTimeout(() => {
+    toastVisible.value = false;
+  }, 3000);
+  showModal.value = false;
 }
 </script>
 
@@ -279,19 +292,19 @@ function handlePostCreated(post) {
       </svg>
       <p class="mt-4 text-lg text-gray-600">Профиль не найден</p>
     </div>
-  </div>
-  <div>
-    <UserPosts :user-id="authStore.user.id" />
-    <button
-      class="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-      @click="showModal = true">
-      Создать пост
-    </button>
+    <div class="max-w-4xl mx-auto">
+      <UserPosts :user-id="authStore.user.id" />
+      <button
+        class="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+        @click="showModal = true">
+        Создать пост
+      </button>
 
-    <CreatePostModal
-      :visible="showModal"
-      :user-id="authStore.user.id"
-      @close="showModal = false"
-      @postCreated="handlePostCreated" />
+      <CreatePostForm
+        :show="showModal"
+        @close="showModal = false"
+        @success="handleSuccess" />
+    </div>
+    <Toast :message="toastMessage" :show="toastVisible" />
   </div>
 </template>

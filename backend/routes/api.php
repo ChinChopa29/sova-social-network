@@ -2,7 +2,11 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\UserPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -25,8 +29,14 @@ Route::middleware('auth:sanctum')->controller(ProfileController::class)->group(f
     Route::delete('/profile/{profile:slug}', 'destroy');
 });
 
-// Route::middleware('auth:sanctum')->controller(ProfileController::class)->group(function () {
-//     Route::get('/profile/{profile:slug?}', 'show');
-//     Route::put('/profile/{profile:slug}', 'update');
-//     Route::delete('/profile/{profile:slug}', 'destroy');
-// });
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/users/{user}/posts', [UserPostController::class, 'index']);
+
+    Route::get('/categories/search', [CategoryController::class, 'search']);
+    Route::resource('categories', CategoryController::class);
+    
+    Route::get('/tags/search', [TagController::class, 'search']);
+    Route::resource('tags', TagController::class);
+
+    Route::resource('posts', PostsController::class);
+});

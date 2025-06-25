@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('category_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['draft', 'published', 'archived', 'private'])->default('draft');
-            $table->json('tags')->nullable(); 
             $table->string('image')->nullable(); 
             $table->boolean('is_commentable')->default(true); 
             $table->unsignedBigInteger('view_count')->default(0)->index(); 

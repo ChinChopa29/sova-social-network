@@ -9,10 +9,10 @@ import {
   MenuItems,
 } from "@headlessui/vue";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/vue/24/outline";
-import router from "../../router";
-import { computed, ref, onMounted } from "vue";
-import axiosClient from "../../axios";
-import { useAuthStore } from "../../store/auth";
+import router from "../router";
+import { computed, ref, onMounted, watch } from "vue";
+import axiosClient from "../axios";
+import { useAuthStore } from "../store/auth";
 import { RouterLink } from "vue-router";
 
 const authStore = useAuthStore();
@@ -29,18 +29,40 @@ const getAvatarUrl = (avatar) => {
 };
 
 const navigation = [{ name: "Главная", to: { name: "Home" }, current: true }];
-const userNavigation = [
-  {
-    name: "Профиль",
-    onclick: () =>
-      router.push({
-        name: "Profile",
-        params: { slug: authStore.user.profile.slug },
-      }),
-  },
-  { name: "Настройки", href: "#" },
-  { name: "Выйти", onclick: logout },
-];
+
+const userNavigation = ref([]);
+
+onMounted(async () => {
+  await authStore.getUser();
+  buildMenu();
+});
+
+watch(user, () => buildMenu(), { immediate: true });
+
+function buildMenu() {
+  const items = [
+    {
+      name: "Профиль",
+      onclick: () =>
+        router.push({
+          name: "Profile",
+          params: { slug: authStore.user.profile.slug },
+        }),
+    },
+    { name: "Настройки", href: "#" },
+  ];
+
+  if (authStore.user?.role === "admin") {
+    items.push({
+      name: "Админ-панель",
+      onclick: () => router.push({ name: "AdminDashboard" }),
+    });
+  }
+
+  items.push({ name: "Выйти", onclick: logout });
+
+  userNavigation.value = items;
+}
 
 function logout() {
   const authStore = useAuthStore();

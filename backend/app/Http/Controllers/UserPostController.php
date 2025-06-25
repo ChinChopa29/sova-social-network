@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Illuminate\Http\Request;
+
+class UserPostController extends Controller
+{
+    public function index(User $user)
+    {
+        return $user->posts()
+            ->latest()
+            ->with('user.profile', 'category', 'tags', 'images') 
+            ->paginate(10); 
+    }
+}

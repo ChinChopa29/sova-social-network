@@ -1,14 +1,50 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "./views/Home.vue";
-import MainLayout from "./components/layouts/MainLayout.vue";
-import Login from "./views/auth/Login.vue";
-import Register from "./views/auth/Register.vue";
-import NotFound from "./views/NotFound.vue";
-import Profile from "./views/profile/Profile.vue";
-import ProfileEdit from "./views/profile/ProfileEdit.vue";
+
+import AdminDashboard from "./pages/admin/dashboard/Index.vue";
+import AdminPosts from "./pages/admin/posts/Index.vue";
+import AdminCategories from "./pages/admin/categories/Index.vue";
+import AdminTags from "./pages/admin/tags/Index.vue";
+
+import PostView from "./pages/post/Show.vue";
+
+import Home from "./pages/Home.vue";
+import MainLayout from "./layouts/MainLayout.vue";
+import AdminLayout from "./layouts/AdminLayout.vue";
+import Login from "./pages/auth/Login.vue";
+import Register from "./pages/auth/Register.vue";
+import NotFound from "./pages/NotFound.vue";
+import Profile from "./pages/profile/Index.vue";
+import ProfileEdit from "./pages/profile/Edit.vue";
 import { useAuthStore } from "./store/auth.js";
 
 const routes = [
+  {
+    path: "/admin-panel",
+    component: AdminLayout,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      {
+        path: "",
+        name: "AdminDashboard",
+        component: AdminDashboard,
+      },
+      {
+        path: "/admin-panel/posts",
+        name: "AdminPosts",
+        component: AdminPosts,
+      },
+      {
+        path: "/admin-panel/categories",
+        name: "AdminCategories",
+        component: AdminCategories,
+      },
+      {
+        path: "/admin-panel/tags",
+        name: "AdminTags",
+        component: AdminTags,
+      },
+    ],
+  },
   {
     path: "/",
     component: MainLayout,
@@ -28,7 +64,13 @@ const routes = [
         path: "/profile/:slug/edit",
         name: "ProfileEdit",
         component: ProfileEdit,
-        meta: { requiresOwnProfile: true }, // 👈 проверка на владельца
+        meta: { requiresOwnProfile: true },
+      },
+      {
+        path: "/posts/:slug",
+        name: "posts.show",
+        component: PostView,
+        props: true,
       },
     ],
   },
@@ -78,6 +120,13 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresOwnProfile) {
     const ownSlug = authStore.user?.profile?.slug;
     if (to.params.slug !== ownSlug) {
+      return next({ name: "NotFound" });
+    }
+  }
+
+  if (to.meta.requiresAdmin) {
+    const role = authStore.user?.role?.trim?.();
+    if (role !== "admin") {
       return next({ name: "NotFound" });
     }
   }
