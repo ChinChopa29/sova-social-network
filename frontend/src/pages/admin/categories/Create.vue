@@ -121,40 +121,18 @@ onMounted(fetchCategories);
             <label class="block text-gray-700 font-medium mb-2"
               >Родительская категория</label
             >
-
-            <input
-              v-model="searchQuery"
-              type="text"
-              class="w-full px-4 py-2 border rounded-lg"
-              placeholder="Поиск категорий..." />
-
-            <div
-              v-if="filteredCategories && filteredCategories.length > 0"
-              class="mt-1 border rounded-lg shadow-lg bg-white max-h-60 overflow-auto z-10">
-              <ul>
-                <li
-                  v-for="cat in filteredCategories"
-                  :key="cat.id"
-                  @click="selectCategory(cat)"
-                  class="px-4 py-2 hover:bg-blue-50 cursor-pointer">
-                  {{ cat.name }}
-                </li>
-              </ul>
-            </div>
-
-            <div
-              v-if="category.parent_id"
-              class="mt-2 px-3 py-2 bg-gray-100 rounded-lg inline-block">
-              <span class="text-gray-700"
-                >Выбрано: {{ parentCategoryName }}</span
-              >
-              <button
-                type="button"
-                @click="clearParent"
-                class="ml-2 text-sm text-red-500">
-                Очистить
-              </button>
-            </div>
+            <select
+              v-model="category.parent_id"
+              class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              :class="{ 'border-red-500': errors.parent_id }">
+              <option :value="null">— Без родителя —</option>
+              <option
+                v-for="cat in allCategories.filter((c) => c.parent_id === null)"
+                :key="cat.id"
+                :value="cat.id">
+                {{ cat.name }}
+              </option>
+            </select>
 
             <p v-if="errors.parent_id" class="text-red-500 text-sm mt-1">
               {{ errors.parent_id }}

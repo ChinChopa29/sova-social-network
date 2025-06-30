@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 import CreateTags from "../tags/Create.vue";
 import axiosClient from "../../../axios";
 import EditTags from "./Edit.vue";
@@ -16,7 +17,6 @@ const toastVisible = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = 10;
 
-// Fetch all tags
 const fetchTags = async () => {
   isFetchingTags.value = true;
   try {
@@ -29,7 +29,6 @@ const fetchTags = async () => {
 
 onMounted(fetchTags);
 
-// Поиск по имени
 const filteredTags = computed(() => {
   if (!searchQuery.value) return allTags.value;
 
@@ -69,7 +68,6 @@ const deleteTag = async (slug) => {
   }
 };
 
-// Пагинация
 const paginationList = computed(() => {
   const total = totalPages.value;
   const current = currentPage.value;
@@ -106,6 +104,12 @@ const handleSuccess = (message) => {
   toastVisible.value = true;
   fetchTags();
 };
+
+const router = useRouter();
+
+const goToTag = (slug) => {
+  router.push({ name: "AdminTagShow", params: { slug } });
+};
 </script>
 
 <template>
@@ -139,7 +143,7 @@ const handleSuccess = (message) => {
         </div>
         <button
           @click="activeModal = 'tag'"
-          class="btn btn-primary flex items-center gap-2 whitespace-nowrap">
+          class="flex items-center gap-2 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5"
@@ -150,7 +154,7 @@ const handleSuccess = (message) => {
               d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
               clip-rule="evenodd" />
           </svg>
-          Новая категория
+          Новый тег
         </button>
       </div>
     </div>
@@ -171,10 +175,6 @@ const handleSuccess = (message) => {
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Slug
-              </th>
-              <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Автор
               </th>
               <th
@@ -185,7 +185,7 @@ const handleSuccess = (message) => {
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-if="isFetchingTags">
-              <td colspan="4" class="px-6 py-4 text-center">
+              <td colspan="3" class="px-6 py-4 text-center">
                 <div class="flex justify-center py-8">
                   <div
                     class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
@@ -213,21 +213,24 @@ const handleSuccess = (message) => {
               </td>
             </tr>
 
-            <tr v-for="tag in paginatedTags" :key="tag.id">
+            <tr
+              v-for="tag in paginatedTags"
+              :key="tag.id"
+              @click="goToTag(tag.slug)"
+              class="hover:bg-gray-100 cursor-pointer">
               <td class="px-6 py-4 text-sm font-medium text-gray-900">
                 {{ tag.id }}
               </td>
               <td class="px-6 py-4 text-sm font-medium text-gray-900">
                 {{ tag.name }}
               </td>
-              <td class="px-6 py-4 text-sm text-gray-600">{{ tag.slug }}</td>
               <td class="px-6 py-4 text-sm text-gray-600">
                 {{ tag.user?.name || "—" }}
               </td>
               <td class="px-6 py-4 text-right text-sm font-medium">
                 <div class="flex justify-end gap-2">
                   <button
-                    @click="editTag(tag)"
+                    @click.stop="editTag(tag)"
                     title="Редактировать"
                     class="text-blue-600 hover:text-blue-900 transition-colors">
                     <svg
@@ -240,7 +243,7 @@ const handleSuccess = (message) => {
                     </svg>
                   </button>
                   <button
-                    @click="deleteTag(tag.slug)"
+                    @click.stop="deleteTag(tag.slug)"
                     title="Удалить"
                     class="text-red-600 hover:text-red-900 transition-colors">
                     <svg

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TagController;
@@ -38,5 +39,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tags/search', [TagController::class, 'search']);
     Route::resource('tags', TagController::class);
 
-    Route::resource('posts', PostsController::class);
+    Route::resource('posts', PostController::class);
 });

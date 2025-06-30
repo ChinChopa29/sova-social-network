@@ -11,8 +11,15 @@ use App\Services\TagService;
 use App\Support\SlugGenerator;
 use Illuminate\Support\Str;
 
-class PostsController extends Controller
+class PostController extends Controller
 {
+    public function index()
+    {
+        return response()->json([
+            'data' => Post::with(['user', 'category'])->latest()->get(),
+        ]);
+    }
+
     public function show(Post $post)
     {
         $post->load(['user.profile', 'category', 'tags', 'images']);

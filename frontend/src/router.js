@@ -3,7 +3,9 @@ import { createRouter, createWebHistory } from "vue-router";
 import AdminDashboard from "./pages/admin/dashboard/Index.vue";
 import AdminPosts from "./pages/admin/posts/Index.vue";
 import AdminCategories from "./pages/admin/categories/Index.vue";
+import AdminCategoryShow from "./pages/admin/categories/Show.vue";
 import AdminTags from "./pages/admin/tags/Index.vue";
+import AdminTagShow from "./pages/admin/tags/Show.vue";
 
 import PostView from "./pages/post/Show.vue";
 
@@ -39,9 +41,19 @@ const routes = [
         component: AdminCategories,
       },
       {
+        path: "/admin-panel/categories/:slug",
+        name: "AdminCategoryShow",
+        component: AdminCategoryShow,
+      },
+      {
         path: "/admin-panel/tags",
         name: "AdminTags",
         component: AdminTags,
+      },
+      {
+        path: "/admin-panel/tags/:slug",
+        name: "AdminTagShow",
+        component: AdminTagShow,
       },
     ],
   },

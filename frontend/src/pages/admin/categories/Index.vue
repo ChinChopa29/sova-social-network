@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
+import { useRouter } from "vue-router";
 import CreateCategories from "../categories/Create.vue";
 import EditCategories from "../categories/Edit.vue";
 import axiosClient from "../../../axios";
@@ -86,7 +87,6 @@ const getParentName = (parentId) => {
   return parent ? parent.name : "-";
 };
 
-// Пагинация с сокращением
 const paginationList = computed(() => {
   const total = totalPages.value;
   const current = currentPage.value;
@@ -115,6 +115,12 @@ const changePage = (page) => {
   if (page !== "..." && page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
+};
+
+const router = useRouter();
+
+const goToCategory = (slug) => {
+  router.push({ name: "AdminCategoryShow", params: { slug } });
 };
 
 onMounted(fetchCategories);
@@ -157,7 +163,7 @@ onMounted(fetchCategories);
 
         <button
           @click="activeModal = 'category'"
-          class="btn btn-primary flex items-center gap-2 whitespace-nowrap">
+          class="flex items-center gap-2 cursor-pointer px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5"
@@ -233,7 +239,8 @@ onMounted(fetchCategories);
             <tr
               v-for="category in paginatedCategories"
               :key="category.id"
-              class="hover:bg-gray-50 transition-colors duration-150">
+              @click="goToCategory(category.slug)"
+              class="hover:bg-gray-100 cursor-pointer">
               <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
                 {{ category.id }}
               </td>
@@ -242,7 +249,6 @@ onMounted(fetchCategories);
                 <div class="text-sm font-medium text-gray-900">
                   {{ category.name }}
                 </div>
-                <div class="text-sm text-gray-500">{{ category.slug }}</div>
               </td>
 
               <td class="px-6 py-4 whitespace-nowrap">

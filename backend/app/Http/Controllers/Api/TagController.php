@@ -21,6 +21,13 @@ class TagController extends Controller
         ]);
     }
 
+    public function show(Tag $tag)
+    {
+        return response()->json([
+            'data' => $tag->load('user')
+        ]);
+    }
+
     public function store(CreateRequest $request)
     {
         $data = $request->validated();

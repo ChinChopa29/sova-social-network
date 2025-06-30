@@ -19,6 +19,13 @@ class CategoryController extends Controller
         $categories = CategoryCacheService::getAll();
         return response()->json(['data' => $categories]);
     }
+
+    public function show(Category $category)
+    {
+        return response()->json([
+            'data' => $category
+        ]);
+    }
     
     public function paginated(): JsonResponse
     {
