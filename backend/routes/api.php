@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -40,4 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('tags', TagController::class);
 
     Route::resource('posts', PostController::class);
+    Route::get('/posts/{post}/comments', [CommentController::class, 'postComments']);
+
+    Route::apiResource('comments', CommentController::class);
 });

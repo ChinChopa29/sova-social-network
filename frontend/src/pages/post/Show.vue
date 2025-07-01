@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { RouterView, useRoute } from "vue-router";
 import axiosClient from "../../axios";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
+
+import Comments from "../post/comment/Index.vue";
 
 const route = useRoute();
 const post = ref(null);
@@ -152,7 +154,7 @@ onMounted(async () => {
 
     <!-- Блок с реакциями -->
     <div
-      class="flex items-center justify-center space-x-8 py-6 border-y border-gray-200 mb-12">
+      class="flex items-center justify-center space-x-8 py-6 border-y border-gray-200">
       <button class="flex flex-col items-center group">
         <span class="text-2xl group-hover:text-green-600 transition">👍</span>
         <span class="text-sm text-gray-500">{{ post.like_count }}</span>
@@ -166,83 +168,9 @@ onMounted(async () => {
         <span class="text-sm text-gray-500">Комментировать</span>
       </button>
     </div>
-
-    <!-- Блок комментариев -->
-    <section id="comments" class="mb-12">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold">Комментарии</h2>
-        <span class="text-sm text-gray-500"
-          >{{ post.comments_count || 0 }} комментариев</span
-        >
-      </div>
-
-      <div v-if="post.is_commentable">
-        <!-- Форма добавления комментария -->
-        <div class="bg-gray-50 rounded-lg p-4 mb-8">
-          <textarea
-            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition"
-            rows="3"
-            placeholder="Напишите ваш комментарий..."></textarea>
-          <div class="flex justify-end mt-2">
-            <button
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-              Отправить
-            </button>
-          </div>
-        </div>
-
-        <!-- Список комментариев (шаблон) -->
-        <div class="space-y-6">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="border-b border-gray-200 pb-6 last:border-0">
-            <div class="flex items-start space-x-3 mb-3">
-              <img
-                src="/img/default-avatar.jpg"
-                alt="avatar"
-                class="w-10 h-10 rounded-full object-cover" />
-              <div>
-                <div class="font-medium">Имя пользователя</div>
-                <div class="text-sm text-gray-500">3 дня назад</div>
-              </div>
-            </div>
-            <div class="pl-13">
-              <p class="text-gray-700 mb-3">
-                Это пример комментария. Здесь будет текст, написанный
-                пользователем.
-              </p>
-              <button class="text-sm text-blue-600 hover:underline">
-                Ответить
-              </button>
-            </div>
-
-            <!-- Вложенные комментарии -->
-            <div class="mt-4 pl-6 border-l-2 border-gray-200 space-y-4">
-              <div v-for="j in 2" :key="j" class="pt-4">
-                <div class="flex items-start space-x-3 mb-3">
-                  <img
-                    src="/img/default-avatar.jpg"
-                    alt="avatar"
-                    class="w-8 h-8 rounded-full object-cover" />
-                  <div>
-                    <div class="font-medium">Другой пользователь</div>
-                    <div class="text-sm text-gray-500">1 день назад</div>
-                  </div>
-                </div>
-                <div class="pl-11">
-                  <p class="text-gray-700">Это ответ на комментарий выше.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-else class="bg-gray-50 rounded-lg p-8 text-center">
-        <p class="text-gray-500">Комментарии к этому посту закрыты</p>
-      </div>
-    </section>
   </div>
+
+  <Comments v-if="post" :slug="post.slug" :post-id="post.id" />
 
   <div v-else class="text-center py-12">
     <p class="text-gray-500 text-lg">Пост не найден</p>

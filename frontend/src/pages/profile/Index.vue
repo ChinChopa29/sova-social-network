@@ -293,17 +293,19 @@ function handlePostCreated(message) {
       <p class="mt-4 text-lg text-gray-600">Профиль не найден</p>
     </div>
     <div class="max-w-4xl mx-auto">
-      <UserPosts :user-id="authStore.user.id" />
-      <button
-        class="bg-blue-600 text-white px-4 py-2 rounded mb-4"
-        @click="showModal = true">
-        Создать пост
-      </button>
+      <div class="max-w-4xl mx-auto" v-if="profile">
+        <UserPosts :user-id="profile.user_id" />
+        <button
+          class="bg-blue-600 text-white px-4 py-2 rounded mb-4"
+          @click="showModal = true">
+          Создать пост
+        </button>
 
-      <CreatePostForm
-        :show="showModal"
-        @close="showModal = false"
-        @success="handleSuccess" />
+        <CreatePostForm
+          :show="showModal"
+          @close="showModal = false"
+          @success="handleSuccess" />
+      </div>
     </div>
     <Toast :message="toastMessage" :show="toastVisible" />
   </div>

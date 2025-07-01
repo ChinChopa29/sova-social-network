@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "laravel-echo": "^2.1.6",
+    "socket.io-client": "^4.8.1"
+  }
+}
