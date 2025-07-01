@@ -189,7 +189,16 @@ const submitPost = async () => {
     if (error.response?.data?.errors) {
       errors.value = error.response.data.errors;
     } else {
-      alert(error.response?.data?.message || "Произошла ошибка");
+      console.error("Ошибка при создании поста:", error);
+
+      if (error.response) {
+        const { status, data } = error.response;
+        alert(`Ошибка ${status}: ${data.message || JSON.stringify(data)}`);
+      } else if (error.request) {
+        alert("Нет ответа от сервера. Проверь соединение.");
+      } else {
+        alert("Ошибка: " + error.message);
+      }
     }
   } finally {
     isLoading.value = false;
@@ -214,12 +223,9 @@ const submitPost = async () => {
         @submit.prevent="submitPost"
         class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="col-span-2 space-y-1">
-          <label class="block text-sm font-medium"
-            >Заголовок</label
-          >
+          <label class="block text-sm font-medium">Заголовок</label>
           <input
             v-model="post.title"
-            @input="handleTitleInput($event)"
             class="w-full border p-2 rounded text-sm"
             required />
         </div>

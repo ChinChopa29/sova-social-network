@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Events\CommentCreated;
 use App\Http\Requests\Comment\CreateRequest;
 use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 
 class CommentController extends Controller
 {
@@ -60,7 +59,12 @@ class CommentController extends Controller
 
     public function postComments(Post $post)
     {
-        return response()->json($post->comments()->with('user')->latest()->get());
+        $comments = $post->comments()
+            ->with(['user.profile', 'children.user.profile', 'children.children.user.profile'])
+            ->latest()
+            ->get();
+
+        return response()->json($comments);
     }
 
     /**

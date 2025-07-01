@@ -9,6 +9,7 @@ use App\Models\Tag;
 use App\Services\PostImageService;
 use App\Services\TagService;
 use App\Support\SlugGenerator;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -22,12 +23,15 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
+        if (!Gate::allows('view', $post)) {
+            abort(403); 
+        }
         $post->load(['user.profile', 'category', 'tags', 'images']);
         return response()->json($post);
     }
 
     public function store(CreateRequest $request)
-    {
+    {   
         $data = $request->validated();
         $data['user_id'] = auth()->id();
 
@@ -47,4 +51,10 @@ class PostController extends Controller
         return response()->json(['message' => 'Пост создан']);
     }
 
+    public function destroy(Post $post)
+    {
+        $post->delete();
+
+        return response()->json(['message' => 'Пост удален']);
+    }
 }

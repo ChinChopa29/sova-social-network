@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class PostUserReaction extends Model
 {
+    protected $table = 'post_user_reaction';
+    
     protected $fillable = [
         'post_id',
         'user_id',
-        'parent_id',
-        'content',
+        'type',
     ];
 
     public function post()
@@ -21,15 +22,5 @@ class Comment extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function parent()
-    {
-        return $this->belongsTo(Comment::class, 'parent_id');
-    }
-
-    public function children()
-    {
-        return $this->hasMany(Comment::class, 'parent_id')->with('user', 'children');
     }
 }

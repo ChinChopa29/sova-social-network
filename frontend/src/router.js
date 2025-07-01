@@ -84,6 +84,16 @@ const routes = [
         component: PostView,
         props: true,
       },
+      {
+        path: "/tags/:slug",
+        name: "tags.show",
+        component: PostView,
+      },
+      {
+        path: "/categories/:slug",
+        name: "categories.show",
+        component: PostView,
+      },
     ],
   },
   {

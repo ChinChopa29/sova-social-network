@@ -14,29 +14,14 @@ const replyTo = ref(null);
 const replyContent = ref("");
 let channel = null;
 
-const buildCommentTree = (flatComments) => {
-  const commentMap = {};
-  const roots = [];
-
-  flatComments.forEach((comment) => {
-    commentMap[comment.id] = { ...comment, children: [] };
-  });
-
-  flatComments.forEach((comment) => {
-    if (comment.parent_id && commentMap[comment.parent_id]) {
-      commentMap[comment.parent_id].children.unshift(commentMap[comment.id]);
-    } else {
-      roots.unshift(commentMap[comment.id]);
-    }
-  });
-
-  return roots;
+const handleReply = (comment) => {
+  replyTo.value = comment;
 };
 
 const loadComments = async () => {
   try {
     const { data } = await axiosClient.get(`/api/posts/${props.slug}/comments`);
-    comments.value = buildCommentTree(data);
+    comments.value = data; // без buildCommentTree!
   } catch (e) {
     console.error("Ошибка загрузки комментариев", e);
   }
@@ -46,19 +31,14 @@ const sendComment = async () => {
   if (!content.value.trim()) return;
 
   try {
-    const payload = {
+    await axiosClient.post("/api/comments", {
       content: content.value,
       post_id: props.postId,
       parent_id: null,
-    };
-
-    const response = await axiosClient.post("api/comments", payload);
-    content.value = "";
-
-    comments.value.unshift({
-      ...response.data.data,
-      children: [],
     });
+
+    content.value = "";
+    await loadComments();
   } catch (e) {
     console.error(
       "Ошибка при отправке комментария",
@@ -69,10 +49,7 @@ const sendComment = async () => {
 
 const startReply = (commentId) => {
   replyTo.value = commentId;
-  const comment = findComment(comments.value, commentId);
-  if (comment) {
-    replyContent.value = `@${comment.user?.name || "Гость"}, `;
-  }
+  replyContent.value = "";
 };
 
 const cancelReply = () => {
@@ -80,45 +57,24 @@ const cancelReply = () => {
   replyContent.value = "";
 };
 
-const sendReply = async () => {
-  if (!replyTo.value || !replyContent.value.trim()) return;
-
+const sendReply = async ({ parentId, content }) => {
   try {
-    const payload = {
-      content: replyContent.value,
+    await axiosClient.post("/api/comments", {
+      content,
       post_id: props.postId,
-      parent_id: replyTo.value,
-    };
+      parent_id: parentId,
+    });
 
-    const response = await axiosClient.post("api/comments", payload);
-    replyContent.value = "";
     replyTo.value = null;
-
-    const parent = findComment(comments.value, payload.parent_id);
-    if (parent) {
-      parent.children.unshift({
-        ...response.data.data,
-        children: [],
-      });
-    }
+    await loadComments();
   } catch (e) {
     console.error("Ошибка при отправке ответа", e.response?.data || e.message);
   }
 };
 
-const findComment = (commentList, commentId) => {
-  for (const comment of commentList) {
-    if (comment.id === commentId) return comment;
-    if (comment.children && comment.children.length) {
-      const found = findComment(comment.children, commentId);
-      if (found) return found;
-    }
-  }
-  return null;
-};
-
-onMounted(async () => {
-  await loadComments();
+onMounted(() => {
+  loadComments();
+  console.log("COMMENTS:", comments.value);
 });
 
 onBeforeUnmount(() => {
@@ -149,7 +105,7 @@ watch(
         v-model="content"
         class="w-full border border-gray-300 rounded-lg p-3 mb-3 focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
         rows="3"
-        placeholder="Напишите ваш комментарий..."></textarea>
+        placeholder="Напишите ваш комментарий..." />
       <div class="flex justify-end">
         <button
           type="submit"
@@ -166,7 +122,7 @@ watch(
         class="w-full border border-gray-300 rounded-lg p-3 mb-3 focus:ring-2 focus:ring-blue-200 focus:border-blue-500"
         rows="3"
         placeholder="Напишите ваш ответ..."
-        autofocus></textarea>
+        autofocus />
       <div class="flex justify-end space-x-3">
         <button
           @click="cancelReply"
@@ -192,7 +148,10 @@ watch(
         :key="comment.id"
         :comment="comment"
         :depth="0"
-        @reply="startReply" />
+        :reply-to="replyTo"
+        @reply="startReply"
+        @cancel="cancelReply"
+        @submit="sendReply" />
     </div>
   </div>
 </template>

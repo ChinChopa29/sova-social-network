@@ -4,11 +4,11 @@ use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
-use App\Http\Controllers\Api\PostsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TagController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\UserPostController;
+use App\Http\Controllers\Api\CommentController;
+use App\Http\Controllers\Api\PostUserReactionController;
+use App\Http\Controllers\Api\UserPostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/posts/{post}/comments', [CommentController::class, 'postComments']);
 
     Route::apiResource('comments', CommentController::class);
+
+    Route::apiResource('reactions', PostUserReactionController::class);
+    Route::get('/reactions/{id}/my', [PostUserReactionController::class, 'myReaction']);
 });

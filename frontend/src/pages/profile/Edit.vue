@@ -160,13 +160,24 @@ function updateProfile() {
   <div class="min-h-full">
     <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
       <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="px-6 py-5 border-b border-gray-200">
-          <h2 class="text-xl font-semibold text-gray-800">
-            Редактирование профиля
-          </h2>
-          <p class="mt-1 text-sm text-gray-500">
-            Обновите ваши личные данные и настройки
-          </p>
+        <div
+          class="px-6 py-5 border-b border-gray-200 flex items-start space-x-4">
+          <!-- Кнопка Назад -->
+          <button
+            @click="$router.back()"
+            class="mt-1 text-sm text-blue-600 hover:underline transition whitespace-nowrap">
+            ← Назад
+          </button>
+
+          <!-- Заголовок и описание -->
+          <div>
+            <h2 class="text-xl font-semibold text-gray-800">
+              Редактирование профиля
+            </h2>
+            <p class="text-sm text-gray-500">
+              Обновите ваши личные данные и настройки
+            </p>
+          </div>
         </div>
 
         <div class="border-b border-gray-200">
