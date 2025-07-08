@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\CategoryController;
@@ -10,7 +11,7 @@ use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\PostUserReactionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserPostController;
-use App\Http\Controllers\ReportActionController;
+use App\Http\Controllers\Api\ReportActionController;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -57,4 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::apiResource('report-actions', ReportActionController::class);
+
+    Route::get('/search', [SearchController::class, 'search']);
+    Route::get('/search/full', [SearchController::class, 'full']);
 });

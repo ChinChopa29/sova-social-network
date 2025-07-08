@@ -191,7 +191,7 @@ const handleReportSuccess = () => {
           <router-link
             v-if="post.category"
             :to="{
-              name: 'categories.show',
+              name: 'CategoryShow',
               params: { slug: post.category.slug },
             }"
             class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium hover:bg-blue-100 transition">
@@ -243,7 +243,7 @@ const handleReportSuccess = () => {
       <!-- Заголовок и контент -->
       <div class="space-y-3">
         <router-link
-          :to="{ name: 'posts.show', params: { slug: post.slug } }"
+          :to="{ name: 'PostsShow', params: { slug: post.slug } }"
           class="text-xl font-bold text-gray-900 hover:text-blue-600 transition block">
           {{ post.title }}
         </router-link>
@@ -294,7 +294,7 @@ const handleReportSuccess = () => {
           <router-link
             v-for="tag in post.tags"
             :key="tag.id"
-            :to="{ name: 'tags.show', params: { slug: tag.slug } }"
+            :to="{ name: 'TagsShow', params: { slug: tag.slug } }"
             class="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition">
             #{{ tag.name }}
           </router-link>
@@ -303,7 +303,7 @@ const handleReportSuccess = () => {
           <router-link
             v-if="post.is_commentable"
             :to="{
-              name: 'posts.show',
+              name: 'PostsShow',
               params: { slug: post.slug },
               hash: '#comments',
             }"

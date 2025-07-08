@@ -12,7 +12,7 @@ const profile = ref(null);
 const loading = ref(true);
 const route = useRoute();
 const isOwner = ref(false);
-const showDetails = ref(false); // Добавляем состояние для отображения деталей
+const showDetails = ref(false);
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 

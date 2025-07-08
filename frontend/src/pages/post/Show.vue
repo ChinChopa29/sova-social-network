@@ -1,16 +1,31 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { RouterView, useRoute } from "vue-router";
+import { ref, onMounted, reactive } from "vue";
+import { useRoute } from "vue-router";
 import axiosClient from "../../axios";
-import { formatDistanceToNow } from "date-fns";
-import { ru } from "date-fns/locale";
 import Actions from "./Actions.vue";
 import Comments from "../post/comment/Index.vue";
+
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal.vue";
+import ReportModal from "../../components/ui/ReportModal.vue";
+import ToastMessage from "../../components/ui/Toast.vue";
+
+const props = defineProps({
+  slug: String,
+  postId: Number,
+});
 
 const route = useRoute();
 const post = ref(null);
 const loading = ref(true);
 const previewImage = ref(null);
+
+const toastMessage = ref("");
+const showToast = ref(false);
+
+const showDeleteModal = ref(false);
+const deletingPost = ref(null);
+
+const currentUserId = ref(null);
 
 const imageUrl = (img) => {
   const base = import.meta.env.VITE_BACKEND_URL;
@@ -34,6 +49,11 @@ const openImage = (img) => {
 onMounted(async () => {
   try {
     const slug = route.params.slug;
+
+    // Получаем текущего пользователя
+    const userResponse = await axiosClient.get("/api/user");
+    currentUserId.value = userResponse.data.id;
+
     const { data } = await axiosClient.get(`/api/posts/${slug}`);
     post.value = data;
   } catch (err) {
@@ -42,6 +62,62 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const openMenus = ref({});
+
+const toggleMenu = (postId) => {
+  openMenus.value[postId] = !openMenus.value[postId];
+};
+
+const closeAllMenus = () => {
+  openMenus.value = {};
+};
+
+const confirmDelete = (post) => {
+  deletingPost.value = post;
+  showDeleteModal.value = true;
+};
+
+const cancelDelete = () => {
+  showDeleteModal.value = false;
+  deletingPost.value = null;
+};
+
+const deletePost = async () => {
+  if (!deletingPost.value) return;
+  try {
+    await axiosClient.delete(`/api/posts/${deletingPost.value.slug}`);
+
+    toastMessage.value = "Пост успешно удалён";
+    showToast.value = true;
+  } catch (e) {
+    console.error("Ошибка удаления поста", e);
+
+    toastMessage.value = "Ошибка при удалении поста";
+    showToast.value = true;
+  } finally {
+    cancelDelete();
+  }
+};
+
+const showReportModal = ref(false);
+const reportTarget = reactive({
+  type: "",
+  id: null,
+  userId: null,
+});
+
+const reportPost = (post) => {
+  reportTarget.type = "post";
+  reportTarget.id = post.id;
+  reportTarget.userId = post.user_id;
+  showReportModal.value = true;
+};
+
+const handleReportSuccess = () => {
+  toastMessage.value = "Жалоба успешно отправлена";
+  showToast.value = true;
+};
 </script>
 
 <template>
@@ -73,21 +149,51 @@ onMounted(async () => {
           ← Назад
         </button>
 
-        <div class="flex gap-2 items-center py-4">
-          <img
-            :src="
-              post.user?.profile?.avatar
-                ? imageUrl(post.user.profile.avatar)
-                : '/img/default-avatar.jpg'
-            "
-            class="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
-            alt="avatar" />
-          <RouterLink
-            v-if="post.user?.profile?.slug"
-            :to="`/profile/${post.user.profile.slug}`"
-            class="font-semibold text-xl text-blue-600 hover:underline">
-            {{ post.user.name }}
-          </RouterLink>
+        <div class="flex gap-2 items-center justify-between py-4">
+          <div class="flex gap-2 items-center">
+            <img
+              :src="
+                post.user?.profile?.avatar
+                  ? imageUrl(post.user.profile.avatar)
+                  : '/img/default-avatar.jpg'
+              "
+              class="w-16 h-16 rounded-full object-cover border-2 border-white shadow"
+              alt="avatar" />
+            <RouterLink
+              v-if="post.user?.profile?.slug"
+              :to="`/profile/${post.user.profile.slug}`"
+              class="font-semibold text-xl text-blue-600 hover:underline">
+              {{ post.user.name }}
+            </RouterLink>
+          </div>
+          <div class="relative menu-container">
+            <button
+              @click.stop="toggleMenu(post.id)"
+              class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition">
+              <span class="text-xl leading-none">⋯</span>
+            </button>
+
+            <div
+              v-if="openMenus[post.id]"
+              class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+              <ul class="text-sm text-gray-700 py-1">
+                <li v-if="post.user_id === currentUserId">
+                  <button
+                    @click="confirmDelete(post)"
+                    class="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600">
+                    Удалить
+                  </button>
+                </li>
+                <li>
+                  <button
+                    @click="reportPost(post)"
+                    class="w-full text-left px-4 py-2 hover:bg-gray-100">
+                    Пожаловаться
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -100,7 +206,7 @@ onMounted(async () => {
           <router-link
             v-if="post.category"
             :to="{
-              name: 'categories.show',
+              name: 'CategoryShow',
               params: { slug: post.category.slug },
             }"
             class="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm font-medium hover:bg-blue-100 transition">
@@ -199,6 +305,20 @@ onMounted(async () => {
         class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105" />
     </div>
   </div>
+
+  <ConfirmDeleteModal
+    v-model="showDeleteModal"
+    :item-name="deletingPost?.title"
+    @confirm="deletePost" />
+
+  <ReportModal
+    v-model:show="showReportModal"
+    :model-type="reportTarget.type"
+    :model-id="reportTarget.id"
+    :target-user-id="reportTarget.userId"
+    @success="handleReportSuccess" />
+
+  <ToastMessage :message="toastMessage" v-model:show="showToast" />
 </template>
 
 <style scoped>

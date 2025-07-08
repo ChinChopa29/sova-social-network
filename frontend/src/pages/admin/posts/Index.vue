@@ -235,9 +235,15 @@ const changePage = (page) => {
             <tr
               v-for="post in paginatedPosts"
               :key="post.id"
-              class="hover:bg-gray-50">
+              class="hover:bg-gray-50 cursor-pointer"
+              @click="
+                $router.push({
+                  name: 'PostsShow',
+                  params: { slug: post.slug },
+                })
+              ">
               <td class="px-6 py-4 text-sm text-gray-900">{{ post.id }}</td>
-              <td class="px-6 py-4 text-sm font-medium text-gray-900">
+              <td class="px-6 py-4 text-sm font-medium text-blue-600 underline">
                 {{ post.title }}
               </td>
               <td class="px-6 py-4 text-sm text-gray-700">

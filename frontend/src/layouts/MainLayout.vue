@@ -14,6 +14,7 @@ import { computed, ref, onMounted, watch } from "vue";
 import axiosClient from "../axios";
 import { useAuthStore } from "../store/auth";
 import { RouterLink } from "vue-router";
+import GlobalSearch from "../components/ui/GlobalSearch.vue";
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
@@ -27,8 +28,6 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const getAvatarUrl = (avatar) => {
   return avatar ? `${backendUrl}${avatar}` : "/img/default-avatar.jpg";
 };
-
-const navigation = [{ name: "Главная", to: { name: "Home" }, current: true }];
 
 const userNavigation = ref([]);
 
@@ -86,27 +85,29 @@ function logout() {
           <!-- Лого + навигация -->
           <div class="flex items-center">
             <div class="shrink-0">
-              <img class="size-10" src="/img/owl.png" alt="Your Company" />
+              <RouterLink
+                :to="{ name: 'Home' }"
+                class="flex items-center gap-2 text-white hover:text-white"
+                title="На главную страницу">
+                <img
+                  class="size-11"
+                  src="/img/owl.png"
+                  alt="Sova"
+                  title="На главную страницу" />
+                <span
+                  class="text-lg font-bold tracking-wide text-white group-hover:underline block sm:hidden"
+                  >Sova</span
+                >
+                <span
+                  class="text-xl font-bold tracking-wide text-white group-hover:underline hidden sm:block"
+                  >Sova</span
+                >
+              </RouterLink>
             </div>
-            <div class="hidden md:block">
-              <div class="ml-10 flex items-baseline space-x-4">
-                <RouterLink
-                  v-for="item in navigation"
-                  :key="item.name"
-                  :to="item.to"
-                  :class="[
-                    $route.name === item.to.name
-                      ? 'bg-blue-700 text-white'
-                      : 'text-blue-100 hover:bg-blue-700 hover:text-white',
-                    'rounded-md px-3 py-2 text-sm font-medium transition-colors duration-200',
-                  ]"
-                  :aria-current="
-                    $route.name === item.to.name ? 'page' : undefined
-                  ">
-                  {{ item.name }}
-                </RouterLink>
-              </div>
-            </div>
+          </div>
+
+          <div class="flex-1 px-6 hidden md:block">
+            <GlobalSearch />
           </div>
 
           <!-- Правая часть шапки -->
@@ -190,21 +191,6 @@ function logout() {
 
       <!-- Мобильное меню -->
       <DisclosurePanel class="md:hidden bg-blue-700">
-        <div class="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-          <RouterLink
-            v-for="item in navigation"
-            :key="item.name"
-            :to="item.to"
-            :class="[
-              $route.name === item.to.name
-                ? 'bg-blue-800 text-white'
-                : 'text-blue-100 hover:bg-blue-800 hover:text-white',
-              'block rounded-md px-3 py-2 text-base font-medium transition-colors duration-200',
-            ]"
-            :aria-current="$route.name === item.to.name ? 'page' : undefined">
-            {{ item.name }}
-          </RouterLink>
-        </div>
         <div class="border-t border-blue-800 pt-4 pb-3 px-5">
           <div v-if="isAuthenticated" class="flex items-center">
             <img
@@ -250,7 +236,7 @@ function logout() {
     <!-- Основное содержимое -->
     <main class="py-8">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <RouterView />
+        <RouterView :key="$route.fullPath" />
       </div>
     </main>
   </div>

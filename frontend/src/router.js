@@ -12,6 +12,7 @@ import AdminReportShow from "./pages/admin/reports/Show.vue";
 import PostView from "./pages/post/Show.vue";
 
 import Home from "./pages/Home.vue";
+import SearchFull from "./pages/SearchResults.vue";
 import MainLayout from "./layouts/MainLayout.vue";
 import AdminLayout from "./layouts/AdminLayout.vue";
 import Login from "./pages/auth/Login.vue";
@@ -92,19 +93,24 @@ const routes = [
       },
       {
         path: "/posts/:slug",
-        name: "posts.show",
+        name: "PostsShow",
         component: PostView,
         props: true,
       },
       {
         path: "/tags/:slug",
-        name: "tags.show",
+        name: "TagsShow",
         component: PostView,
       },
       {
         path: "/categories/:slug",
-        name: "categories.show",
+        name: "CategoryShow",
         component: PostView,
+      },
+      {
+        path: "/search",
+        name: "SearchFull",
+        component: SearchFull,
       },
     ],
   },

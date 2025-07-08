@@ -9,6 +9,8 @@ const authStore = useAuthStore();
 const reportStore = useReportStore();
 
 const user = computed(() => authStore.user);
+
+const isActive = (name) => route.name === name;
 </script>
 
 <template>
@@ -38,80 +40,70 @@ const user = computed(() => authStore.user);
         </RouterLink>
       </div>
 
-      <nav class="p-4">
-        <div class="space-y-2">
-          <div
-            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
-            <RouterLink
-              :to="{ name: 'AdminDashboard' }"
-              class="block p-3 rounded-lg transition-colors"
-              :class="
-                route.name === 'AdminDashboard'
-                  ? 'bg-indigo-800 font-semibold'
-                  : 'hover:bg-indigo-600'
-              ">
-              Главная
-            </RouterLink>
-          </div>
-          <div
-            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
-            <RouterLink
-              :to="{ name: 'AdminPosts' }"
-              class="block p-3 rounded-lg transition-colors"
-              :class="
-                route.name === 'AdminPosts'
-                  ? 'bg-indigo-800 font-semibold'
-                  : 'hover:bg-indigo-600'
-              ">
-              Посты
-            </RouterLink>
-          </div>
-          <div
-            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
-            <RouterLink
-              :to="{ name: 'AdminCategories' }"
-              class="block p-3 rounded-lg transition-colors"
-              :class="
-                route.name === 'AdminCategories'
-                  ? 'bg-indigo-800 font-semibold'
-                  : 'hover:bg-indigo-600'
-              ">
-              Категории
-            </RouterLink>
-          </div>
-          <div
-            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
-            <RouterLink
-              :to="{ name: 'AdminTags' }"
-              class="block p-3 rounded-lg transition-colors"
-              :class="
-                route.name === 'AdminTags'
-                  ? 'bg-indigo-800 font-semibold'
-                  : 'hover:bg-indigo-600'
-              ">
-              Теги
-            </RouterLink>
-          </div>
-          <div
-            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
-            <RouterLink
-              :to="{ name: 'AdminReports' }"
-              class="block p-3 rounded-lg transition-colors"
-              :class="
-                route.name === 'AdminReports'
-                  ? 'bg-indigo-800 font-semibold'
-                  : 'hover:bg-indigo-600'
-              ">
-              <span class="relative inline-block">
-                Жалобы
-                <span
-                  v-if="reportStore.count > 0"
-                  class="bg-red-400 px-2 py-1 rounded-full relative bottom-2.5 text-xs">
-                  {{ reportStore.count }}
-                </span>
-              </span>
-            </RouterLink>
-          </div>
+      <nav class="p-4 space-y-6">
+        <!-- Контент -->
+        <div>
+          <h2 class="text-xs text-indigo-200 uppercase mb-2">Контент</h2>
+          <RouterLink
+            :to="{ name: 'AdminDashboard' }"
+            class="block p-3 rounded-lg transition-colors"
+            :class="{
+              'bg-indigo-800 font-semibold': isActive('AdminDashboard'),
+              'hover:bg-indigo-600': !isActive('AdminDashboard'),
+            }">
+            Главная
+          </RouterLink>
+          <RouterLink
+            :to="{ name: 'AdminPosts' }"
+            class="block p-3 rounded-lg transition-colors"
+            :class="{
+              'bg-indigo-800 font-semibold': isActive('AdminPosts'),
+              'hover:bg-indigo-600': !isActive('AdminPosts'),
+            }">
+            Посты
+          </RouterLink>
+          <RouterLink
+            :to="{ name: 'AdminCategories' }"
+            class="block p-3 rounded-lg transition-colors"
+            :class="{
+              'bg-indigo-800 font-semibold': isActive('AdminCategories'),
+              'hover:bg-indigo-600': !isActive('AdminCategories'),
+            }">
+            Категории
+          </RouterLink>
+          <RouterLink
+            :to="{ name: 'AdminTags' }"
+            class="block p-3 rounded-lg transition-colors"
+            :class="{
+              'bg-indigo-800 font-semibold': isActive('AdminTags'),
+              'hover:bg-indigo-600': !isActive('AdminTags'),
+            }">
+            Теги
+          </RouterLink>
+        </div>
+
+        <!-- Модерация -->
+        <div>
+          <h2 class="text-xs text-indigo-200 uppercase mb-2">Модерация</h2>
+          <RouterLink
+            :to="{ name: 'AdminReports' }"
+            class="flex justify-between items-center block p-3 rounded-lg transition-colors"
+            :class="{
+              'bg-indigo-800 font-semibold': isActive('AdminReports'),
+              'hover:bg-indigo-600': !isActive('AdminReports'),
+            }">
+            <span>Жалобы</span>
+            <span
+              v-if="reportStore.count > 0"
+              class="bg-red-400 px-2 py-1 rounded-full text-xs">
+              {{ reportStore.count }}
+            </span>
+          </RouterLink>
+        </div>
+
+        <!-- Система -->
+        <div>
+          <h2 class="text-xs text-indigo-200 uppercase mb-2">Система</h2>
           <div
             class="p-3 rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
             Настройки
@@ -123,6 +115,7 @@ const user = computed(() => authStore.user);
         </div>
       </nav>
 
+      <!-- Пользователь -->
       <div class="absolute bottom-0 w-64 p-4 border-t border-indigo-600">
         <div class="flex items-center space-x-3">
           <img

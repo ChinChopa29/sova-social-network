@@ -239,13 +239,16 @@ onMounted(fetchCategories);
             <tr
               v-for="category in paginatedCategories"
               :key="category.id"
-              @click="goToCategory(category.slug)"
-              class="hover:bg-gray-100 cursor-pointer">
-              <td class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap">
+              class="hover:bg-gray-100">
+              <td
+                @click="goToCategory(category.slug)"
+                class="px-6 py-4 text-sm text-gray-900 whitespace-nowrap cursor-pointer">
                 {{ category.id }}
               </td>
 
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td
+                @click="goToCategory(category.slug)"
+                class="px-6 py-4 whitespace-nowrap cursor-pointer">
                 <div class="text-sm font-medium text-gray-900">
                   {{ category.name }}
                 </div>
@@ -264,7 +267,7 @@ onMounted(fetchCategories);
                 class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex justify-end space-x-2">
                   <button
-                    @click="editCategory(category)"
+                    @click.stop="editCategory(category)"
                     class="text-blue-600 hover:text-blue-900 transition-colors"
                     title="Редактировать">
                     <svg
@@ -277,7 +280,7 @@ onMounted(fetchCategories);
                     </svg>
                   </button>
                   <button
-                    @click="deleteCategory(category.slug)"
+                    @click.stop="deleteCategory(category.slug)"
                     class="text-red-600 hover:text-red-900 transition-colors"
                     title="Удалить">
                     <svg

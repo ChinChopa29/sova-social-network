@@ -154,7 +154,7 @@ onMounted(async () => {
               <router-link
                 v-for="tag in report.target?.tags"
                 :key="tag.id"
-                :to="{ name: 'tags.show', params: { slug: tag.slug } }"
+                :to="{ name: 'TagsShow', params: { slug: tag.slug } }"
                 class="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full text-xs transition">
                 #{{ tag.name }}
               </router-link>
