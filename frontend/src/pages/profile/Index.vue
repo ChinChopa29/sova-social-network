@@ -5,7 +5,7 @@ import axiosClient from "../../axios";
 import { useAuthStore } from "../../store/auth";
 import UserPosts from "./Posts.vue";
 import CreatePostForm from "../../components/ui/CreatePostForm.vue";
-import Toast from "../Toast.vue";
+import Toast from "../../components/ui/Toast.vue";
 
 const authStore = useAuthStore();
 const profile = ref(null);

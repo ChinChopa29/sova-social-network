@@ -8,7 +8,10 @@ use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\CommentController;
 use App\Http\Controllers\Api\PostUserReactionController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\UserPostController;
+use App\Http\Controllers\ReportActionController;
+use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,7 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/categories/search', [CategoryController::class, 'search']);
     Route::resource('categories', CategoryController::class);
-    
+
     Route::get('/tags/search', [TagController::class, 'search']);
     Route::resource('tags', TagController::class);
 
@@ -47,4 +50,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('reactions', PostUserReactionController::class);
     Route::get('/reactions/{id}/my', [PostUserReactionController::class, 'myReaction']);
+
+    Route::apiResource('reports', ReportController::class);
+    Route::get('/admin/reports/count', function () {
+        return response()->json(['count' => Report::count()]);
+    });
+
+    Route::apiResource('report-actions', ReportActionController::class);
 });

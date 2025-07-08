@@ -6,6 +6,8 @@ import AdminCategories from "./pages/admin/categories/Index.vue";
 import AdminCategoryShow from "./pages/admin/categories/Show.vue";
 import AdminTags from "./pages/admin/tags/Index.vue";
 import AdminTagShow from "./pages/admin/tags/Show.vue";
+import AdminReports from "./pages/admin/reports/Index.vue";
+import AdminReportShow from "./pages/admin/reports/Show.vue";
 
 import PostView from "./pages/post/Show.vue";
 
@@ -54,6 +56,16 @@ const routes = [
         path: "/admin-panel/tags/:slug",
         name: "AdminTagShow",
         component: AdminTagShow,
+      },
+      {
+        path: "/admin-panel/reports",
+        name: "AdminReports",
+        component: AdminReports,
+      },
+      {
+        path: "/admin-panel/reports/:id",
+        name: "AdminReportShow",
+        component: AdminReportShow,
       },
     ],
   },

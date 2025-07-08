@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import CreateTags from "../tags/Create.vue";
 import axiosClient from "../../../axios";
 import EditTags from "./Edit.vue";
-import Toast from "../../Toast.vue";
+import Toast from "../../../components/ui/Toast.vue";
 
 const allTags = ref([]);
 const isFetchingTags = ref(false);

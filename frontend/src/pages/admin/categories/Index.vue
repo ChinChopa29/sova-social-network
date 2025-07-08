@@ -4,7 +4,7 @@ import { useRouter } from "vue-router";
 import CreateCategories from "../categories/Create.vue";
 import EditCategories from "../categories/Edit.vue";
 import axiosClient from "../../../axios";
-import Toast from "../../Toast.vue";
+import Toast from "../../../components/ui/Toast.vue";
 
 const activeModal = ref(null);
 const toastMessage = ref("");

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -27,5 +28,12 @@ class AppServiceProvider extends ServiceProvider
 
         Broadcast::routes(['middleware' => ['auth:sanctum']]);
         require base_path('routes/channels.php');
+
+        Relation::morphMap([
+            'post' => \App\Models\Post::class,
+            'comment' => \App\Models\Comment::class,
+            'profile' => \App\Models\Profile::class,
+            // 'group' => \App\Models\Group::class,
+        ]);
     }
 }

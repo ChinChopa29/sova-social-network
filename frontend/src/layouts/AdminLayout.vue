@@ -1,20 +1,21 @@
 <script setup>
-import { RouterLink } from "vue-router";
-import { computed } from "vue";
+import { useReportStore } from "../store/report";
 import { useAuthStore } from "../store/auth";
-import { RouterView } from "vue-router";
 import { useRoute } from "vue-router";
+import { computed } from "vue";
 
 const route = useRoute();
-
 const authStore = useAuthStore();
+const reportStore = useReportStore();
+
 const user = computed(() => authStore.user);
 </script>
 
 <template>
-  <div class="flex min-h-screen bg-gray-50">
+  <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
-    <aside class="w-64 bg-indigo-700 text-white shadow-lg">
+    <aside
+      class="w-64 bg-indigo-700 text-white shadow-lg fixed inset-y-0 left-0 z-30">
       <div
         class="p-4 flex items-center justify-between border-b border-indigo-600">
         <h1 class="text-xl font-bold">Админ-панель</h1>
@@ -92,6 +93,26 @@ const user = computed(() => authStore.user);
             </RouterLink>
           </div>
           <div
+            class="rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
+            <RouterLink
+              :to="{ name: 'AdminReports' }"
+              class="block p-3 rounded-lg transition-colors"
+              :class="
+                route.name === 'AdminReports'
+                  ? 'bg-indigo-800 font-semibold'
+                  : 'hover:bg-indigo-600'
+              ">
+              <span class="relative inline-block">
+                Жалобы
+                <span
+                  v-if="reportStore.count > 0"
+                  class="bg-red-400 px-2 py-1 rounded-full relative bottom-2.5 text-xs">
+                  {{ reportStore.count }}
+                </span>
+              </span>
+            </RouterLink>
+          </div>
+          <div
             class="p-3 rounded-lg hover:bg-indigo-600 transition-colors cursor-pointer">
             Настройки
           </div>
@@ -117,7 +138,7 @@ const user = computed(() => authStore.user);
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 p-8">
+    <main class="flex-1 ml-64 overflow-y-auto h-screen p-8 bg-gray-50">
       <div class="bg-white rounded-xl shadow-sm p-6">
         <RouterView />
       </div>

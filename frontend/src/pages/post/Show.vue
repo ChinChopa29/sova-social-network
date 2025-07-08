@@ -28,7 +28,6 @@ const statusMap = {
 };
 
 const openImage = (img) => {
-  console.log("Открываем изображение", img);
   previewImage.value = imageUrl(img);
 };
 
@@ -139,7 +138,7 @@ onMounted(async () => {
             :src="imageUrl(img)"
             @click="openImage(img)"
             class="w-full h-64 object-cover cursor-zoom-in hover:opacity-90 transition-opacity"
-            :alt="`Изображение ${index + 1} из поста ${post.title}`" />
+            :alt="img.alt || 'Изображение поста'" />
           <div
             class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4 pointer-events-none">
             <span class="text-white text-sm">Нажмите для просмотра</span>
@@ -196,6 +195,7 @@ onMounted(async () => {
     <div class="max-w-6xl w-full">
       <img
         :src="previewImage"
+        alt="Просмотр изображения"
         class="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105" />
     </div>
   </div>

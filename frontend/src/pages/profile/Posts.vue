@@ -1,12 +1,18 @@
 <script setup>
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, computed, nextTick, reactive } from "vue";
 import axiosClient from "../../axios";
+import ConfirmDeleteModal from "../../components/ui/ConfirmDeleteModal.vue";
+import ReportModal from "../../components/ui/ReportModal.vue";
+import ToastMessage from "../../components/ui/Toast.vue";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import Actions from "../post/Actions.vue";
 
 const props = defineProps({
   userId: Number,
+  modelType: { type: String, required: true },
+  modelId: { type: [String, Number], required: true },
+  targetUserId: { type: [String, Number], required: true },
 });
 
 const currentUserId = ref(null);
@@ -37,7 +43,7 @@ const loading = ref(false);
 
 const observer = ref(null);
 const bottom = ref(null);
-const openMenus = ref({}); // для контроля меню
+const openMenus = ref({});
 
 const toggleMenu = (postId) => {
   openMenus.value[postId] = !openMenus.value[postId];
@@ -94,6 +100,9 @@ onMounted(async () => {
 const showDeleteModal = ref(false);
 const deletingPost = ref(null);
 
+const toastMessage = ref("");
+const showToast = ref(false);
+
 const confirmDelete = (post) => {
   deletingPost.value = post;
   showDeleteModal.value = true;
@@ -109,15 +118,36 @@ const deletePost = async () => {
   try {
     await axiosClient.delete(`/api/posts/${deletingPost.value.slug}`);
     posts.value = posts.value.filter((p) => p.id !== deletingPost.value.id);
+
+    toastMessage.value = "Пост успешно удалён";
+    showToast.value = true;
   } catch (e) {
     console.error("Ошибка удаления поста", e);
+
+    toastMessage.value = "Ошибка при удалении поста";
+    showToast.value = true;
   } finally {
     cancelDelete();
   }
 };
 
-const reportPost = (id) => {
-  alert(`Пожаловаться на пост с ID ${id}`);
+const showReportModal = ref(false);
+const reportTarget = reactive({
+  type: "",
+  id: null,
+  userId: null,
+});
+
+const reportPost = (post) => {
+  reportTarget.type = "post";
+  reportTarget.id = post.id;
+  reportTarget.userId = post.user_id;
+  showReportModal.value = true;
+};
+
+const handleReportSuccess = () => {
+  toastMessage.value = "Жалоба успешно отправлена";
+  showToast.value = true;
 };
 </script>
 
@@ -199,7 +229,7 @@ const reportPost = (id) => {
                 </li>
                 <li>
                   <button
-                    @click="reportPost(post.id)"
+                    @click="reportPost(post)"
                     class="w-full text-left px-4 py-2 hover:bg-gray-100">
                     Пожаловаться
                   </button>
@@ -316,32 +346,19 @@ const reportPost = (id) => {
     </div>
   </div>
 
-  <Teleport to="body">
-    <div
-      v-if="showDeleteModal"
-      class="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-md rounded-xl shadow-lg p-6 space-y-4">
-        <h2 class="text-lg font-bold text-gray-800">Удалить пост?</h2>
-        <p class="text-gray-600">
-          Вы действительно хотите удалить пост
-          <span class="font-semibold">«{{ deletingPost?.title }}»</span>? Это
-          действие необратимо.
-        </p>
-        <div class="flex justify-end gap-3 pt-4">
-          <button
-            @click="cancelDelete"
-            class="px-4 py-2 rounded bg-gray-100 hover:bg-gray-200 text-gray-700">
-            Отмена
-          </button>
-          <button
-            @click="deletePost"
-            class="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white">
-            Удалить
-          </button>
-        </div>
-      </div>
-    </div>
-  </Teleport>
+  <ConfirmDeleteModal
+    v-model="showDeleteModal"
+    :item-name="deletingPost?.title"
+    @confirm="deletePost" />
+
+  <ReportModal
+    v-model:show="showReportModal"
+    :model-type="reportTarget.type"
+    :model-id="reportTarget.id"
+    :target-user-id="reportTarget.userId"
+    @success="handleReportSuccess" />
+
+  <ToastMessage :message="toastMessage" v-model:show="showToast" />
 </template>
 
 <style scoped>

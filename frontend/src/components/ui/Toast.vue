@@ -12,7 +12,7 @@ watch(
   (value) => {
     if (value) {
       setTimeout(() => {
-        emit("update:show", false); // работает для v-model:show
+        emit("update:show", false);
       }, 3000);
     }
   }
